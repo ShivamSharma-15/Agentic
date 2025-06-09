@@ -17,10 +17,7 @@ def extract_product_details(input_json_file):
     for product in data:
         extracted_product = {
             "name": product.get("name"),
-            "description": product.get("description"),
-            "image": product.get("image")[0] if product.get("image") else None,
-            "brand": product.get("brand"),
-            "priceSpecification": product.get("offers", {}).get("priceSpecification")
+            "description": product.get("description")
         }
         extracted_data.append(extracted_product)
 
