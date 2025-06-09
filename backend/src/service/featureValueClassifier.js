@@ -21,6 +21,7 @@ Classify the user's search into one of these feature requests for the product- $
 
 ${featureValueListString}
 
+Only include the features listed above in your answer, do not add your own
 Please keep in mind common synonyms and interchangeably used terms for above features. Keep in mind redundancy, do not use similar descriptions twice. Respond with just one or more features that matches for the search and put it between square brackets seperated by a comma. example: [big oled display,maximum storage]
 The featuers that the user requests but are not available should also be included and put in a seperate [], example if matched feature is "[big oled display,maximum storage]" and unmatched is "[bone,muscle]" your reply should be [big oled display,maximum storage]&&[bone,muscle]]. Reply with [null] if the feature asked by user is nonsensical, impractical, unusual category for that product, useless or does not make sense. Do not use any other words in the output please.
 

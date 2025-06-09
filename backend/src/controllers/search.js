@@ -11,14 +11,14 @@ const searchController = async function (query) {
   const product = await productClassifier(query);
   if (product[0] === "null") {
     const productList = product[1];
-    answer = `We currently do not have a listing for that product. Our current product range is: \n${productList}`;
+    const answer = `We currently do not have a listing for that product. Our current product range is: \n${productList}`;
     return answer;
   }
   filteredProduct.push(product[0]);
 
   const productCategory = await categoryClassifier(filteredProduct, query);
   if (productCategory[0] === "null") {
-    answer = `Sorry but that seems like an invalid request. Please try again`;
+    const answer = `Sorry but that seems like an invalid request. Please try again`;
   }
   filteredProduct.push(productCategory[0]);
   let missing = [];
