@@ -16,8 +16,7 @@ def extract_product_details(input_json_file):
 
     for product in data:
         extracted_product = {
-            "name": product.get("name"),
-            "description": product.get("description")
+            "name": product.get("name")
         }
         extracted_data.append(extracted_product)
 
@@ -25,7 +24,7 @@ def extract_product_details(input_json_file):
 
 if __name__ == "__main__":
     input_file = "this.json"
-    output_file = "extracted_product_details.json"
+    output_file = "product_details.json"
 
     try:
         extracted_details = extract_product_details(input_file)

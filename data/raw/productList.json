@@ -714,6 +714,29 @@
         "Indigo Ink",
         "Dusky Rose"
       ]
+    },
+    "bed": {
+      "kingsized bed": [
+        "Black",
+        "Brown",
+        "Chestnut Brown",
+        "Columbian Walnut",
+        "Dark Olive Green",
+        "Distressed White",
+        "Exotic Teak",
+        "Flowery Wenge",
+        "Frosty White",
+        "Ginger Bread",
+        "Graphite Grey",
+        "Grey",
+        "Honey",
+        "Indigo Blue",
+        "Iris Blue",
+        "Irish Cream",
+        "Jade ivory",
+        "Teak",
+        "Walnut"
+      ]
     }
   }
 }

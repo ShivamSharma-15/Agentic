@@ -18,6 +18,7 @@ ${colorString}
 
 Please keep in mind common synonyms and interchangeably used terms for above colors. Try to find a color from the above list, that closely matches, or can be percieved as the color that the user asked for, for example if the user asks for peach, and in the above list does not contain peach but contains ivory and light orange, return [ivory,light orange].
 Include all the colors present in the list. If there are cases where one color is peach mango and peach leafy, include both saperated by a comma and within square brackets, example [peach,light orange].If the colors that the user requests are not available, and not even close to the list above, simply return [null], if in the query the user does not specify a color, return [null]. Reply with [null] if the color asked by user is nonsensical, impractical, unusual color for that product, useless or does not make sense. Do not use any other words in the output please.
+(for beds, you might consider finish color as color)
 
 Query: "${query}"
 Colors:
