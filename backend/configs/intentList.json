@@ -1,7 +1,7 @@
 {
   "intent": [
     "greetings: general user greeting message like hi, hello etc.",
-    "search: The user is trying to search something related to sofas in a funrniture store",
+    "search: The user is trying to search something related to items in a funrniture store",
     "noreply: The user is asking something that does not fit the above two categories"
   ]
 }
