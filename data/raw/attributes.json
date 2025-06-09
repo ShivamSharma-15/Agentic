@@ -1,0 +1,21 @@
+{
+  "sofa": [
+    {
+      "seater": "Specifies the seating capacity of the sofa (e.g., 1 seater, 3 seater, 5 seater). Variations like '3+1+1 seater' indicate a three-seater with two additional single-seater pieces.",
+      "finish": "Describes the surface treatment of the wood, ranging from specific wood types (Honey, Walnut, Teak) to more general descriptions ('varied finish options', 'wooden grain shade').",
+      "material": "Lists the materials used in the sofa's construction, including various types of wood, cane, brass, fabric, and foam.",
+      "features": "A comprehensive list of features and selling points, highlighting comfort, durability, design aspects, manufacturing processes, and sustainability.  Some redundancy exists due to variations in marketing copy.",
+      "product_name": "Lists the individual product names within the catalog. Some names specify the seater count, while others don't.",
+      "shape": "Indicates the overall shape of the sofa: L-shaped, corner sofa, or right-aligned.",
+      "upholstery_print": "Describes the pattern or style of the fabric upholstery, ranging from plain to various prints (floral, geometric, checkered).",
+      "leg_material": "Specifies the material of the sofa legs: brass or wood.",
+      "base_material": "Details the primary wood type used for the sofa's frame.",
+      "upholstery_material": "Clarifies the fabric type used for upholstery.",
+      "storage_type": "Indicates the types of storage included in the sofa, if any.",
+      "armrest_style": "Describes the design of the armrests, offering several variations.",
+      "design_style": "Categorizes the overall design aesthetic of the sofa, ranging from modern to traditional.",
+      "additional_items_included": "Specifies any additional items included with the sofa, such as a coffee table.",
+      "capacity_description": "Offers a more descriptive explanation of the seating capacity, particularly for sofa sets including additional chairs."
+    }
+  ]
+}
