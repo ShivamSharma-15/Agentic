@@ -1,5 +1,5 @@
 {
-  "products": ["sofa"],
+  "products": ["sofa", "bed"],
   "categories": {
     "sofa": ["wooden sofa"],
     "bed": ["kingsized bed"]
