@@ -1,7 +1,8 @@
 {
   "products": ["sofa"],
   "categories": {
-    "sofa": ["wooden sofa"]
+    "sofa": ["wooden sofa"],
+    "bed": ["kingsized bed"]
   },
   "attributes": {
     "sofa": {
