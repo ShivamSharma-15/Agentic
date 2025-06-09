@@ -1,13 +1,16 @@
 const fs = require("fs");
 const path = require("path");
 const cosineSimilarity = require("cosine-similarity");
-const { pipeline } = require("@xenova/transformers");
+async function getPipeline() {
+  const { pipeline } = await import("@xenova/transformers");
+  return await pipeline("feature-extraction", "Xenova/bge-small-en-v1.5");
+}
 
 let embed = null;
 
 async function loadModel() {
   if (!embed) {
-    embed = await pipeline("feature-extraction", "Xenova/bge-small-en-v1.5");
+    embed = await getPipeline();
   }
 }
 
@@ -28,12 +31,6 @@ function weightedAverage(vectors, weights) {
   return result.map((v) => v / norm);
 }
 
-/**
- * Search and return full product objects.
- * @param {Array} queryArray - Array like ['sofa', 'wooden sofa', ..., 'indigo blue']
- * @param {string} embeddingFilePath - Path to embedded_products.json
- * @returns {Promise<Array<object>>} - Top 5 matching product JSONs
- */
 async function searchTopProductsWeighted(queryArray, embeddingFilePath) {
   await loadModel();
 

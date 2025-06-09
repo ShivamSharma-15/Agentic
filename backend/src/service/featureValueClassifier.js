@@ -7,6 +7,9 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const MODEL = "gemini-1.5-flash";
 
 const featureValueClassifier = async function (filteredProduct, query) {
+  if (filteredProduct[2] == "null") {
+    return ["null"];
+  }
   const featureValueListString = await generateFeatureValueListString(
     filteredProduct
   );
