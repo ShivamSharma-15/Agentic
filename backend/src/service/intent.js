@@ -14,6 +14,7 @@ Classify the user's query into one of these intents:
 
 ${intentString}
 
+the search can be for a product from a furniture store
 Respond with just the intent from above within square brackets []. Use [noreply] only when no other intent matches. Do not use any other words please.
 
 Query: "${query}"
