@@ -17,6 +17,8 @@ const rootController = async (req, res, next) => {
       response: answer,
     });
   }
+  if (intent.indexOf("moreOf") !== -1) {
+  }
 };
 
 module.exports = { rootController };

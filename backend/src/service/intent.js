@@ -16,6 +16,7 @@ ${intentString}
 
 the search can be for a product from a furniture store
 Respond with just the intent from above within square brackets []. Use [noreply] only when no other intent matches. Do not use any other words please.
+If a user query starts with some variation of "I am also looking for", "one more product" etc. That means a "search" intent
 
 Query: "${query}"
 Intent:
