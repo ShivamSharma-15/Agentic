@@ -36,20 +36,20 @@ Colors:
 
 const generateColorListString = async function (filteredProduct) {
   const colorList = await loadProductList();
+  let colorListString = "";
+  const category = filteredProduct[0];
   if (filteredProduct[1] === "all") {
-    const totalCats = Object.keys(colorList.colors[filteredProduct[0]]);
+    const totalCats = Object.keys(featureList.colors[category]);
     let i = 0;
-    while (i < totalCats) {
+    while (i < totalCats.length) {
       const catLength = Object.keys(colorList.colors[[filteredProduct[0]][i]]);
       for (let j = 0; j < catLength; j++) {
-        if (i === catLength - 1) {
-          colorList += `- ${Object.values(
-            colorList.colors[[filteredProduct[0]][i]][0][0]
-          )}`;
+        let subCategory = Object.keys(featureList.colors[category])[i];
+        let tryData = featureList.colors[category][subCategory];
+        if (j === tryData.length - 1) {
+          colorList += `- ${tryData(j)}`;
         } else {
-          colorList += `- ${Object.values(
-            colorList.colors[[filteredProduct[0]][i]][0][0]
-          )}\n`;
+          colorList += `- ${tryData(j)}\n`;
         }
       }
       i++;
@@ -60,7 +60,7 @@ const generateColorListString = async function (filteredProduct) {
   let totalLength =
     colorList.colors[filteredProduct[0]][filteredProduct[1]].length;
   let target = colorList.colors[filteredProduct[0]][filteredProduct[1]];
-  let colorListString = "";
+
   if (!colorList) {
     return null;
   }
