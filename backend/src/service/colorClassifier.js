@@ -44,19 +44,22 @@ const generateColorListString = async function (filteredProduct) {
     const totalCats = Object.keys(colorList.colors[category]);
     let i = 0;
     while (i < totalCats.length) {
-      const catLength = Object.keys(colorList.colors[[filteredProduct[0]][i]]);
+      let subCategory = Object.keys(colorList.colors[category])[i];
+
+      let tryData = colorList.colors[category][subCategory];
+      let catLength = Object.keys(tryData).length;
       for (let j = 0; j < catLength; j++) {
         let subCategory = Object.keys(colorList.colors[category])[i];
         let tryData = colorList.colors[category][subCategory];
         if (j === tryData.length - 1) {
-          colorList += `- ${tryData(j)}`;
+          colorListString += `- ${tryData[j]}`;
         } else {
-          colorList += `- ${tryData(j)}\n`;
+          colorListString += `- ${tryData[j]}\n`;
         }
       }
       i++;
     }
-    return colorList;
+    return colorListString;
   }
   colorList.colors[filteredProduct[0]][filteredProduct[1]];
   let totalLength =
