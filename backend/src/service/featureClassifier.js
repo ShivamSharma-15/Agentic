@@ -36,27 +36,24 @@ Features:
 const generateFeatureListString = async function (filteredProduct) {
   const featureList = await loadProductList();
   let featureListString = "";
-  let j = 0;
+  const category = filteredProduct[0];
   if (filteredProduct[1] === "all") {
-    const totalCats = Object.keys(featureList.attributes[filteredProduct[0]]);
-    console.log(totalCats);
+    const totalCats = Object.keys(featureList.attributes[category]);
+
     let i = 0;
-    while (i < totalCats) {
-      console.log(i);
-      const catLength = Object.keys(
-        featureList.attributes[[filteredProduct[0]][i]]
-      );
-      for (let j = 0; j < catLength; j++) {
-        if (i === catLength - 1) {
-          featureListString += `${Object.keys(
-            featureList.attributes[[filteredProduct[0]][i]]
-          )} - ${Object.values(featureList.attributes[filteredProduct[0]][i])}`;
+    while (i < totalCats.length) {
+      let subCategory = Object.keys(featureList.attributes[category])[i];
+      let tryData = featureList.attributes[category][subCategory];
+      let keys = Object.keys(tryData).length;
+      for (let j = 0; j < keys; j++) {
+        if (j === keys - 1) {
+          featureListString += `${Object.keys(tryData)[j]} - ${
+            Object.values(tryData)[j]
+          }`;
         } else {
-          featureListString += `${Object.keys(
-            featureList.attributes[[filteredProduct[0]][i]]
-          )} - ${Object.values(
-            featureList.attributes[filteredProduct[0]][i]
-          )}\n`;
+          featureListString += `${Object.keys(tryData)[j]} - ${
+            Object.values(tryData)[j]
+          }\n`;
         }
       }
       i++;
@@ -64,30 +61,16 @@ const generateFeatureListString = async function (filteredProduct) {
     return featureListString;
   }
 
-  let totalLength = Object.keys(
-    featureList.attributes[filteredProduct[0]][filteredProduct[1]]
-  ).length;
+  const subCategory = filteredProduct[1];
 
-  if (!featureList) {
-    return null;
-  }
+  let totalLength = Object.keys(
+    featureList.attributes[category][subCategory]
+  ).length;
   for (let i = 0; i < totalLength; i++) {
-    if (
-      i ===
-      Object.keys(
-        featureList.attributes[filteredProduct[0]][filteredProduct[1]]
-      ).length -
-        1
-    ) {
+    if (i === totalLength - 1) {
       featureListString += `${
-        Object.keys(
-          featureList.attributes[filteredProduct[0]][filteredProduct[1]]
-        )[i]
-      } - ${
-        Object.values(
-          featureList.attributes[filteredProduct[0]][filteredProduct[1]]
-        )[i]
-      }`;
+        Object.keys(featureList.attributes[category][subCategory])[i]
+      } - ${Object.values(featureList.attributes[category][subCategory])[i]}`;
     } else {
       featureListString += `${
         Object.keys(

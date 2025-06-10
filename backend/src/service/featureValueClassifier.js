@@ -46,35 +46,32 @@ Features:
 const generateFeatureValueListString = async function (filteredProduct) {
   const featureList = await loadProductList();
   let featureListString = "";
-  if (filteredProduct[1] === "all") {
-    const totalCats = Object.keys(
-      featureList.attribute_value[filteredProduct[0]]
-    );
-    let i = 0;
-    while (i < totalCats) {
-      const catLength = Object.keys(
-        featureList.attribute_value[[filteredProduct[0]][i]]
-      );
-      for (let j = 0; j < catLength; j++) {
-        if (i === catLength - 1) {
-          featureListString += `${Object.keys(
-            featureList.attribute_value[[filteredProduct[0]][i]]
-          )} - ${Object.values(
-            featureList.attribute_value[filteredProduct[0]][i]
-          )}`;
-        } else {
-          featureListString += `${Object.keys(
-            featureList.attribute_value[[filteredProduct[0]][i]]
-          )} - ${Object.values(
-            featureList.attribute_value[filteredProduct[0]][i]
-          )}\n`;
-        }
-      }
-      i++;
-    }
-    return featureListString;
-  }
+  const category = filteredProduct[0];
   const totalFeatures = filteredProduct[2].length;
+  if (filteredProduct[1] === "all") {
+    const totalCats = Object.keys(featureList.attribute_value[category]);
+    let i = 0;
+
+    for (let j = 0; i < totalFeatures; i++) {
+      while (i < totalCats.length) {
+        let subCategory = Object.keys(featureList.attribute_value[category])[i];
+        let tryData = featureList.attribute_value[category][subCategory];
+        let allKeys = Object.keys(tryData);
+        if (allKeys.indexOf(filteredProduct[2][j]) !== -1) {
+          let key =
+            featureList.attribute_value[category][subCategory][
+              filteredProduct[2][j]
+            ];
+          featureListString += key.join(", ");
+          if (j !== totalFeatures - 1) {
+            featureListString += ", ";
+          }
+        }
+        i++;
+      }
+    }
+  }
+
   for (let i = 0; i < totalFeatures; i++) {
     let key =
       featureList.attribute_value[filteredProduct[0]][filteredProduct[1]][
