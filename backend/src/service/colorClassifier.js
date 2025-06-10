@@ -9,6 +9,7 @@ const MODEL = "gemini-1.5-flash";
 const colorClassifier = async function (filteredProduct, query) {
   const colorString = await generateColorListString(filteredProduct);
   const model = genAI.getGenerativeModel({ model: MODEL });
+  console.log(colorString);
   const prompt = `
 You are a simple color classifier for a furniture store chatbot. Your job is to match the available color list provided below with what the user is actually looking for.
 The product that the user wants to see has been classified as ${filteredProduct[0]}, the particular product cataegory has been classified as ${filteredProduct[1]}
