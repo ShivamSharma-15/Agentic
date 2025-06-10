@@ -70,6 +70,7 @@ const generateFeatureValueListString = async function (filteredProduct) {
         i++;
       }
     }
+    return featureListString;
   }
 
   for (let i = 0; i < totalFeatures; i++) {
