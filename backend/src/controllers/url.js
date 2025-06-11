@@ -10,8 +10,7 @@ async function url(query) {
   let response;
   if (intentUrl.indexOf("details") !== -1) {
     response = await llmDetailTeller(query, JSON.stringify(product));
-  }
-  if (intentUrl.indexOf("moreLike" !== -1)) {
+  } else if (intentUrl.indexOf("moreLike" !== -1)) {
     const newQuery = await makeQueryForProduct(query, JSON.stringify(product));
     const searchResult = await searchController(newQuery, urls);
     response = searchResult;
