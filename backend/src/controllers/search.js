@@ -3,10 +3,10 @@ const { categoryClassifier } = require("../service/categoryClassifier");
 const { featureClassifier } = require("../service/featureClassifier");
 const { featureValueClassifier } = require("../service/featureValueClassifier");
 const { colorClassifier } = require("../service/colorClassifier");
-const searchTopProducts = require("../utils/searchProduct");
+const { searchTopProductsWeighted } = require("../utils/searchProduct");
 const path = require("path");
 const { finalOutput } = require("../service/llmAnswer");
-const searchController = async function (query) {
+const searchController = async function (query, skip = []) {
   let filteredProduct = [];
   const product = await productClassifier(query);
   if (product[0] === "null") {
@@ -27,10 +27,15 @@ const searchController = async function (query) {
   filteredProduct.push(features[0]);
   missing.push(features[1]);
   const featureValues = await featureValueClassifier(filteredProduct, query);
+  if (!Array.isArray(featureValues[0])) {
+    const pushFeatureValues = [featureValues[0]];
+    filteredProduct.push(pushFeatureValues);
+  }
   filteredProduct.push(featureValues[0]);
   missing.push(featureValues[1]);
   const color = await colorClassifier(filteredProduct, query);
   filteredProduct.push(color[0]);
+  console.log(color.length);
   missing.push(color[1]);
   console.log(filteredProduct);
   console.log(missing);
@@ -38,9 +43,22 @@ const searchController = async function (query) {
     __dirname,
     "../../../data/embedded/embedded_products.json"
   );
+  let result;
+  if (skip.length < 1) {
+    result = await searchTopProductsWeighted(
+      filteredProduct,
+      embeddingFilePath
+    );
+  } else {
+    result = await searchTopProductsWeighted(
+      filteredProduct,
+      embeddingFilePath,
+      skip
+    );
+  }
 
-  const result = await searchTopProducts(filteredProduct, embeddingFilePath);
   const answer = await finalOutput(query, result);
+
   // const simplifiedQuery = await querySimplifier(filteredProduct, query);
 
   // const matcher = await matchProducts(filteredProduct, simplifiedQuery);

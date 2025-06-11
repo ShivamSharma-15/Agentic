@@ -8,7 +8,6 @@ const MODEL = "gemini-1.5-flash";
 
 const featureClassifier = async function (filteredProduct, query) {
   const featureListString = await generateFeatureListString(filteredProduct);
-  console.log(featureListString);
   const model = genAI.getGenerativeModel({ model: MODEL });
   const prompt = `
 You are a simple product feature classifier for a furniture store chatbot. Your job is to match the available features list for a product line up across the products list with what the user is actually looking for.

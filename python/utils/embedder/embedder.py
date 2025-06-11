@@ -30,6 +30,7 @@ embedded_products = []
 for product in tqdm(products, desc="Embedding products"):
     text = format_product_for_embedding(product)
     embedding = model.encode(text).tolist()  # convert numpy to list for JSON serializing
+    product_url = product.get("url", "")
     embedded_products.append({
         "product": product,
         "embedding": embedding

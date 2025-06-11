@@ -31,7 +31,11 @@ function weightedAverage(vectors, weights) {
   return result.map((v) => v / norm);
 }
 
-async function searchTopProductsWeighted(queryArray, embeddingFilePath) {
+async function searchTopProductsWeighted(
+  queryArray,
+  embeddingFilePath,
+  skip = []
+) {
   await loadModel();
 
   const categoryList = [queryArray[0]];
@@ -61,15 +65,17 @@ async function searchTopProductsWeighted(queryArray, embeddingFilePath) {
   const raw = fs.readFileSync(fullPath, "utf-8");
   const embeddedProducts = JSON.parse(raw);
 
-  const scored = embeddedProducts.map((entry) => {
-    const score = cosineSimilarity(queryEmbedding, entry.embedding);
-    return { product: entry.product, score };
-  });
+  const scored = embeddedProducts
+    .filter((entry) => !skip.includes(entry.product.url)) // Skip unwanted URLs
+    .map((entry) => {
+      const score = cosineSimilarity(queryEmbedding, entry.embedding);
+      return { product: entry.product, score };
+    });
 
   return scored
     .sort((a, b) => b.score - a.score)
     .slice(0, 5)
-    .map((entry) => entry.product); // Return full product objects
+    .map((entry) => entry.product);
 }
 
-module.exports = searchTopProductsWeighted;
+module.exports = { searchTopProductsWeighted };

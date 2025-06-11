@@ -74,6 +74,7 @@ const generateFeatureValueListString = async function (filteredProduct) {
   }
 
   for (let i = 0; i < totalFeatures; i++) {
+    console.log(filteredProduct[2]);
     let key =
       featureList.attribute_value[filteredProduct[0]][filteredProduct[1]][
         filteredProduct[2][i]

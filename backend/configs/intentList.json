@@ -4,6 +4,7 @@
     "search: The user is trying to search something related to items in a funrniture store",
     "noreply: The user is asking something that does not fit the above two categories",
     "moreOf: The user wants to see more of the suggested products from earlier",
-    "designer: example is -> I have this, what do I pair it with"
+    "designer: example is -> I have this, what do I pair it with",
+    "url: When a user gives a url of a product from https://www.woodenstreet.com/product and asks for details, more like etc. If just a product url is provided with no context, still match it with url"
   ]
 }
