@@ -3,7 +3,7 @@ const { searchController } = require("./search");
 
 async function moreOf(query, chatId) {
   let history = await getLast7Urls(chatId);
-  answer = await searchController(query, history, chatId);
+  answer = await searchController(query, history[0], chatId);
   return answer;
 }
 module.exports = { moreOf };
