@@ -6,11 +6,17 @@ const { getBracketedCsv } = require("../utils/processString");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const MODEL = "gemini-1.5-flash";
 
-const categoryClassifier = async function (filteredProduct, query) {
+const categoryClassifier = async function (filteredProduct, query, history) {
   const categoryListString = await generateCategoryListString(filteredProduct);
   const model = genAI.getGenerativeModel({ model: MODEL });
   const prompt = `
 You are a simple product category classifier for a furniture store chatbot. Your job is to match the available category list for a specific product with what the user is actually looking for.
+
+Chat History of the user (past 7 messages):
+${history}
+
+Consider the above history as well when responding. If the user is not clear about the category in the query, use the category that they last talked about.
+
 The product that the user wants to see has been classified as ${filteredProduct[0]}
 Classify the user's search into one of these Categories for the product- ${filteredProduct[0]}:
 

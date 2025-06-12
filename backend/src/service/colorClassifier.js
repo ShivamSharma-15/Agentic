@@ -6,13 +6,19 @@ const { getBracketedCsv } = require("../utils/processString");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const MODEL = "gemini-1.5-flash";
 
-const colorClassifier = async function (filteredProduct, query) {
+const colorClassifier = async function (filteredProduct, query, history) {
   const colorString = await generateColorListString(filteredProduct);
   const model = genAI.getGenerativeModel({ model: MODEL });
   console.log(colorString);
   const prompt = `
 You are a simple color classifier for a furniture store chatbot. Your job is to match the available color list provided below with what the user is actually looking for.
 The product that the user wants to see has been classified as ${filteredProduct[0]}, the particular product cataegory has been classified as ${filteredProduct[1]}
+
+Chat History of the user (past 7 messages):
+${history}
+
+Consider the above history as well when responding. if the user's query requires past knowledge use the colors from above, however if the user's query does not mention color as well as that context is not required for search, do not use the above history color
+
 Classify the user's search into one of these color requests for the product- ${filteredProduct[0]}:
 
 ${colorString}

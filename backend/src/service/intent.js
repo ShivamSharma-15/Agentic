@@ -5,11 +5,18 @@ const { getBracketedCsv } = require("../utils/processString");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const MODEL = "gemini-1.5-flash";
 
-async function intentClassifier(query) {
+async function intentClassifier(query, history) {
   const intentString = await generateIntentString();
   const model = genAI.getGenerativeModel({ model: MODEL });
+  console.log(history);
   const prompt = `
 You are an intent classifier. Your job is to accurately classify intents of a query.
+
+Chat History of the user (past 7 messages):
+${history}
+
+Consider the above history as well when responding if that is relevant 
+
 Classify the user's query into one of these intents:
 
 ${intentString}

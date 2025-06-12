@@ -2,10 +2,12 @@ const { intentClassifier } = require("../service/intent");
 const { basicReplyController } = require("./basicReply");
 const { searchController } = require("./search");
 const { url } = require("./url");
+const { getLast7MessagesForLLM } = require("../utils/getLast7Messages");
 const rootController = async (req, res, next) => {
-  const { query } = req.body;
+  const { query, chatId } = req.body;
   let answer;
-  const intent = await intentClassifier(query);
+  let history = await getLast7MessagesForLLM(chatId);
+  const intent = await intentClassifier(query, history);
   console.log(intent[0]);
   if (intent.indexOf("search") === -1 && intent.indexOf("url") === -1) {
     answer = await basicReplyController(intent);
@@ -14,7 +16,7 @@ const rootController = async (req, res, next) => {
     });
   }
   if (intent.indexOf("search") !== -1) {
-    answer = await searchController(query);
+    answer = await searchController(query, [], chatId);
     return res.json({
       response: answer,
     });

@@ -28,19 +28,33 @@ async function saveMessage(userId, intent, payload) {
     timestamp,
   };
   await client.lpush(`chat:${userId}:${intent}`, JSON.stringify(intentEntry));
-  await client.ltrim(`chat:${userId}:${intent}`, 0, 49); // Keep last 50 per intent
+  await client.ltrim(`chat:${userId}:${intent}`, 0, 11); // Keep last 50 per intent
 
   await client.sadd(`chat:${userId}:intents`, intent);
 }
 
-async function getUserConversationFlow(userId, limit = 20) {
+async function getUserConversationFlow(userId, limit = 11) {
   const messages = await client.lrange(`chat:${userId}:root`, 0, limit - 1);
-  return messages.map(JSON.parse);
+
+  return messages.map((entry) => {
+    if (typeof entry === "string") {
+      return JSON.parse(entry);
+    } else {
+      // Already an object, likely test/dev
+      return entry;
+    }
+  });
 }
 
-async function getIntentHistory(userId, intent, limit = 20) {
+async function getIntentHistory(userId, intent, limit = 11) {
   const history = await client.lrange(`chat:${userId}:${intent}`, 0, limit - 1);
-  return history.map(JSON.parse);
+  return history.map((entry) => {
+    if (typeof entry === "string") {
+      return JSON.parse(entry);
+    } else {
+      return entry;
+    }
+  });
 }
 
 async function getUserIntents(userId) {

@@ -6,11 +6,17 @@ const { getBracketedCsv } = require("../utils/processString");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const MODEL = "gemini-1.5-flash";
 
-const productClassifier = async function (query) {
+const productClassifier = async function (query, history) {
   const productListString = await generateProductListString();
   const model = genAI.getGenerativeModel({ model: MODEL });
   const prompt = `
 You are a simple product classifier for a furniture store chatbot. Your job is to match the available product list.
+
+Chat History of the user (past 7 messages):
+${history}
+
+Consider the above history as well when deciding what is being talked about, for example if above there is product: bed, and the next message is not clear on what product, the bed is the product
+
 Classify the user's search into one of these products:
 
 ${productListString}

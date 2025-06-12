@@ -6,12 +6,18 @@ const { getBracketedCsv } = require("../utils/processString");
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const MODEL = "gemini-1.5-flash";
 
-const featureClassifier = async function (filteredProduct, query) {
+const featureClassifier = async function (filteredProduct, query, history) {
   const featureListString = await generateFeatureListString(filteredProduct);
   const model = genAI.getGenerativeModel({ model: MODEL });
   const prompt = `
 You are a simple product feature classifier for a furniture store chatbot. Your job is to match the available features list for a product line up across the products list with what the user is actually looking for.
 The product that the user wants to see has been classified as ${filteredProduct[0]}, the particular product cataegory has been classified as ${filteredProduct[1]}
+
+Chat History of the user (past 7 messages):
+${history}
+
+Consider the above history as well when responding. if the user's query requires past knowledge use the features from above, however if the user's query does not mention features as well as that context is not required for search, do not use the above history
+
 Classify the user's search into one of these feature requests for the product- ${filteredProduct[0]}:
 
 ${featureListString}
@@ -30,7 +36,13 @@ Features:
   console.log("  Feature Input Tokens:", usage.promptTokenCount);
   console.log("  Feature Output Tokens:", usage.candidatesTokenCount);
   feature.push(featureListString);
-  return feature;
+  if (Array.isArray(feature[0])) return feature;
+  else {
+    const start = feature.shift();
+    const prepend = [start];
+    feature.unshift(prepend);
+    return feature;
+  }
 };
 
 const generateFeatureListString = async function (filteredProduct) {
