@@ -51,4 +51,32 @@ async function getLast7MessagesForLLM(userId) {
   return formatted.join("\n");
 }
 
-module.exports = { getLast7MessagesForLLM };
+async function getLast7Urls(userId) {
+  const rawMessages = await getUserConversationFlow(userId, 1);
+
+  if (!rawMessages || rawMessages.length === 0) {
+    return "No prior context available. This is the user's first message.";
+  }
+
+  const ordered = rawMessages.reverse(); // Oldest to newest
+  const formatted = [];
+  for (const msg of ordered) {
+    const { query, intent, timestamp } = msg;
+    if (!query) continue;
+
+    let detailed;
+    try {
+      const intentHistory = await getIntentHistory(userId, intent, 50);
+      detailed = intentHistory.find((h) => h.timestamp === timestamp);
+    } catch (err) {
+      console.error("Failed to fetch intent detail", err);
+    }
+
+    let attributesSummary = "";
+    formatted.push(detailed?.product_urls);
+  }
+
+  return formatted;
+}
+
+module.exports = { getLast7MessagesForLLM, getLast7Urls };
