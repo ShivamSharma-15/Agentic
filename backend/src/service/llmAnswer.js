@@ -63,7 +63,7 @@ You will receive:
 2. A product schema.
 
 Use natural language but be concise. Do not include anything else in your response
-Reply in plain text and do not use markdown
+Reply in plain text and do not use markdown. This will break the code. UNDER NO CIRCUMSTANCES, EVER, REPLY IN MARKDOWN. PLAIN TEXT ONLY
 
 User Query: ${query}
 Product Schema: ${product}
