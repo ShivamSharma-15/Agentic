@@ -34,6 +34,9 @@ const rootController = async (req, res, next) => {
   }
   if (intent.indexOf("moreof") !== -1) {
     answer = await moreOf(query, chatId);
+    return res.json({
+      response: answer,
+    });
   }
 };
 
