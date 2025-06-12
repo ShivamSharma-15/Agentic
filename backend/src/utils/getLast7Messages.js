@@ -33,6 +33,10 @@ async function getLast7MessagesForLLM(userId) {
         ? attrs.features.join(", ")
         : attrs.features || "N/A";
 
+      const featuresValues = Array.isArray(attrs.featuresValues)
+        ? attrs.featuresValues.join(", ")
+        : attrs.featuresValues || "N/A";
+
       const colors = Array.isArray(attrs.colors)
         ? attrs.colors.join(", ")
         : attrs.colors || "N/A";

@@ -44,11 +44,19 @@ const searchController = async function (query, skip = [], chatId) {
   if (!Array.isArray(featureValues[0])) {
     const pushFeatureValues = [featureValues[0]];
     filteredProduct.push(pushFeatureValues);
+  } else {
+    filteredProduct.push(featureValues[0]);
   }
-  filteredProduct.push(featureValues[0]);
+
   missing.push(featureValues[1]);
   const color = await colorClassifier(filteredProduct, query, history);
-  filteredProduct.push(color[0]);
+  if (!Array.isArray(color[0])) {
+    const pushFeatureValues = [color[0]];
+    filteredProduct.push(pushFeatureValues);
+  } else {
+    filteredProduct.push(color[0]);
+  }
+
   console.log(color.length);
   missing.push(color[1]);
   console.log(filteredProduct);

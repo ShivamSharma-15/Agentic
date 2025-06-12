@@ -10,22 +10,43 @@ const categoryClassifier = async function (filteredProduct, query, history) {
   const categoryListString = await generateCategoryListString(filteredProduct);
   const model = genAI.getGenerativeModel({ model: MODEL });
   const prompt = `
-You are a simple product category classifier for a furniture store chatbot. Your job is to match the available category list for a specific product with what the user is actually looking for.
+You are a simple product category classifier for a furniture store chatbot.  
+Your job is to classify what product **category** the user is referring to, based on the available category list for a specific product.
 
-Chat History of the user (past 7 messages):
+---
+## Context:
+- Product: ${filteredProduct[0]}
+- Available categories for this product: ${categoryListString}
+- Chat History (last 7 messages):  
 ${history}
+---
 
-Consider the above history as well when responding. If the user is not clear about the category in the query, use the category that they last talked about.
+## Rules for Classification:
 
-The product that the user wants to see has been classified as ${filteredProduct[0]}
-Classify the user's search into one of these Categories for the product- ${filteredProduct[0]}:
+1. **Check the current user query for a category name or synonym**.  
+    - Use common synonyms and alternate terms to map the user’s request to one of the listed categories.
+    - Example: "sofa bed" → [sofa cum bed]  
+    - Example: "tv shelf" → [tv unit]
 
-${categoryListString}
+2. If no clear category is mentioned in the current query:
+    - Check chat history for the **last mentioned relevant category** for this product.
+    - If found and the current query is ambiguous (e.g., “do you have it in white?”), use the category from the history.
 
-Please keep in mind common synonyms and interchangeably used terms for above Categories. Respond with just one category that matches for the search and put it between square brackets. example: [bed]
-Respond with just one category from above within square brackets []. Use [all] when no category matches or category is not mentioned by the user. The category has to be a reasonable category for that product to have. Reply with [null] if the category asked by user is nonsensical, impractical, unusual category for that product, useless or does not make sense. Do not use any other words please.
+3. If the user query is **generic or broad** (e.g., "show me beds"), and doesn't specify any specific category, return [all].
 
-Query: "${query}"
+4. If the user mentions a **nonsensical, impractical, or unrelated category** for this product, return [null].
+
+---
+## Final Instruction:
+
+Return just **one category** from the list, in square brackets.  
+- Format: [category]  
+- Use [all] if no specific category is mentioned.  
+- Use [null] if the query makes no sense or references an invalid category.  
+Do **not** include any other text or explanation.
+
+---
+User Query: "${query}"  
 Category:
 `;
 

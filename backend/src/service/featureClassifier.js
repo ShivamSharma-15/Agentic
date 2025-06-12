@@ -9,24 +9,50 @@ const MODEL = "gemini-1.5-flash";
 const featureClassifier = async function (filteredProduct, query, history) {
   const featureListString = await generateFeatureListString(filteredProduct);
   const model = genAI.getGenerativeModel({ model: MODEL });
-  const prompt = `
-You are a simple product feature classifier for a furniture store chatbot. Your job is to match the available features list for a product line up across the products list with what the user is actually looking for.
-The product that the user wants to see has been classified as ${filteredProduct[0]}, the particular product cataegory has been classified as ${filteredProduct[1]}
+  const prompt = `You are a simple product feature classifier for a furniture store chatbot.  
+Your job is to identify which feature categories from the available list match what the user is asking for.
 
-Chat History of the user (past 7 messages):
+Context:
+- Product: ${filteredProduct[0]}
+- Product category: ${filteredProduct[1]}
+- Feature list: ${featureListString}
+- Chat History (last 7 messages):  
 ${history}
 
-Consider the above history as well when responding. if the user's query requires past knowledge use the features from above, however if the user's query does not mention features as well as that context is not required for search, do not use the above history
+Rules for Classification:
 
-Classify the user's search into one of these feature requests for the product- ${filteredProduct[0]}:
+1. Identify if the current user query mentions any product features (e.g., size, material, storage, smart features, USB ports, reclining, color, etc.).
+    - If yes → Match the relevant feature(s) to entries from the feature list using synonyms and common language.
+    - If no feature is clearly stated in the query → go to Rule 2.
 
-${featureListString}
+2. If no feature is found in the current query:
+    - Look at the chat history to check for a feature-related mention relevant to the same product context.
+    - If such a feature exists in history, match it.
+    - If not, return [null].
 
-Please keep in mind common synonyms and interchangeably used terms for above features. Respond with just one or more features that matches for the search and put it between square brackets seperated by a comma. example: [display, storage]
-The featuers that the user requests but are not available should also be included and put in a seperate [], example if matched feature is "[display,storage]" and unmatched is "[bone,muscle]" your reply should be [display,storage]&&[bone,muscle]]. Reply with [null] if the feature asked by user is nonsensical, impractical, unusual category for that product, useless or does not make sense. Do not use any other words in the output please.
+3. Use common synonyms and related terms to map user queries to your feature list.
+    - Example: If user says “55 inch” and your feature list has “Screen size”, match to [Screen size].
+    - Example: If user says “leather” and the feature list has “Upholstery material”, match to [Upholstery material].
 
-Query: "${query}"
-Features:
+4. If the user request includes a feature that is not in the list, add it to a separate unmatched list.
+    - Format the output as:  
+      [matched1,matched2] &&
+    [unmatched1,unmatched2]
+
+5. If the query contains only irrelevant, nonsensical, or unusable feature requests, return [null].
+
+Final Instruction:
+
+Return the features the user is requesting in this exact format:  
+- If features are matched: [matchedFeature1,matchedFeature2]  
+- If some features are unmatched: [matchedFeature1] &&
+    [unmatchedFeature1]
+- If nothing is valid or useful: [null]
+
+Do **not** add any extra text or explanation.
+
+---
+User Query: "${query}"
 `;
 
   const result = await model.generateContent(prompt);

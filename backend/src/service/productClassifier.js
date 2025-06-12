@@ -7,25 +7,46 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const MODEL = "gemini-1.5-flash";
 
 const productClassifier = async function (query, history) {
+  console.log(query);
   const productListString = await generateProductListString();
   const model = genAI.getGenerativeModel({ model: MODEL });
+  console.log(history);
   const prompt = `
-You are a simple product classifier for a furniture store chatbot. Your job is to match the available product list.
+You are a simple product classifier for a furniture store chatbot.  
+Your job is to classify what product the user is referring to, based on the available product list.
 
-Chat History of the user (past 7 messages):
+---
+## Context:
+- Chat History (last 7 messages):  
 ${history}
+- Available products: ${productListString}
+---
 
-Consider the above history as well when deciding what is being talked about, for example if above there is product: bed, and the next message is not clear on what product, the bed is the product
+## Rules for Classification:
 
-Classify the user's search into one of these products:
+1. Check the **current user query** for any mention or synonym of a product from the list.  
+    - Use common phrasing and interchangeable terms.  
+    - Example: “couch” → [sofa], “sleeping furniture” → [bed]
 
-${productListString}
+2. If the query does **not explicitly mention a product**, try to infer the product from **chat history**:  
+    - Look for the last clearly mentioned product in history.  
+    - If the current query is vague or refers to color, features, or general interest (e.g., “show me something in blue”), assume the user is still referring to the last mentioned product.
 
-Please keep in mind common synonyms and interchangeably used terms for above products. Also if the request is for a purpose match that with suitable product too, for example: "I need calling device", product response shoud be either [mobile] or [phone] based on other details of the query. Respond with just one Product that matches for the search and put it between square brackets. example: [bed]
-Use [null] when no product matches. Do not use any other words please.
+3. If the user refers to a **function or purpose** (e.g., “something to relax on”), map to a suitable product if possible (e.g., [sofa], [recliner]).
 
-Query: "${query}"
+4. If **no valid product** can be determined from the query or history, or the request is nonsensical or unrelated to furniture, return [null].
+
+---
+## Final Output Format:
+
+- Return exactly one product from the product list in this format: [product]
+- If no product applies, return [null]
+- Never return empty brackets, never include explanation.
+
+---
+User Query: "${query}"  
 Product:
+
 `;
 
   const result = await model.generateContent(prompt);

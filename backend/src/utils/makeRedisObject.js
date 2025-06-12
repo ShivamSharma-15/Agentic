@@ -16,7 +16,12 @@ function makeObject(query, result, filteredProduct) {
   const attributes_used = {
     product_name: filteredProduct[0] || null,
     category: filteredProduct[1] || null,
-    features: Array.isArray(filteredProduct[3])
+    features: Array.isArray(filteredProduct[2])
+      ? filteredProduct[2]
+      : typeof filteredProduct[2] === "string"
+      ? [filteredProduct[2]]
+      : [],
+    featuresValues: Array.isArray(filteredProduct[3])
       ? filteredProduct[3]
       : typeof filteredProduct[3] === "string"
       ? [filteredProduct[3]]

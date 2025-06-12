@@ -11,26 +11,47 @@ const colorClassifier = async function (filteredProduct, query, history) {
   const model = genAI.getGenerativeModel({ model: MODEL });
   console.log(colorString);
   const prompt = `
-You are a simple color classifier for a furniture store chatbot. Your job is to match the available color list provided below with what the user is actually looking for.
-The product that the user wants to see has been classified as ${filteredProduct[0]}, the particular product cataegory has been classified as ${filteredProduct[1]}
+You are a simple color classifier for a furniture store chatbot.  
+Your job is to match the user's current query to the most appropriate color(s) from the available list provided below.
 
-Chat History of the user (past 7 messages):
+---
+## Context:
+- Product: ${filteredProduct[0]}
+- Product category: ${filteredProduct[1]}
+- Color list: ${colorString}
+- Chat History (last 7 messages):  
 ${history}
+---
 
-Consider the above history as well when responding. if the user's query requires past knowledge use the colors from above, however if the user's query does not mention color as well as that context is not required for search, do not use the above history color
+## Rules for Classification:
 
-Classify the user's search into one of these color requests for the product- ${filteredProduct[0]}:
+1. **Check if the current user query mentions a color or color-related term** (e.g., blue, dark, pastel, light, neutral).
+    - If yes → Match that to the closest color(s) from the list.
+    - If the query mentions a **negated color** (e.g., "not white", "anything but black"), explicitly exclude that color and prefer alternatives that may fit better.
+    - If no → go to Rule 2.
 
-${colorString}
+2. If the query does not mention any color-related term:
+    - Check if the chat history contains a **recent color mention that clearly applies to the same product or request**.
+    - If yes, use that color.
+    - If not, return [null].
 
-Match the query to as many colors as possible
-Please keep in mind common synonyms and interchangeably used terms for above colors. Try to find a color from the above list, that closely matches, or can be percieved as the color that the user asked for, for example if the user asks for peach, and in the above list does not contain peach but contains ivory and light orange, return [ivory,light orange].
-Include all the colors present in the list. If there are cases where one color is peach mango and peach leafy, include both saperated by a comma and within square brackets, example [peach,light orange].If the colors that the user requests are not available, and not even close to the list above, simply return [null], if in the query the user does not specify a color, return [null]. Reply with [null] if the color asked by user is nonsensical, impractical, unusual color for that product, useless or does not make sense. Do not use any other words in the output please.
-(for beds, you might consider finish color as color)
+3. Use **common synonyms or close matches** to map the user request to the color list.
+    - If the user says "peach" and only "ivory" and "light orange" are close matches, return [ivory,light orange].
+    - If the list contains similar prefixed/suffixed options (e.g., "peach mango", "peach leafy"), include both.
 
-Query: "${query}"
-Colors:
-`;
+4. If the user specifies a color that is **not in the list** and not even close to anything in the list, return [null].
+
+5. If the user query is **irrelevant, nonsensical, or does not concern color**, return [null].
+
+---
+## Final Instruction:
+
+Match the query to as many colors as possible from the list.  
+Return the result strictly in this format: [color1,color2] or [null].  
+Do **not** include any other text or explanation.
+
+---
+User Query: "${query}"`;
 
   const result = await model.generateContent(prompt);
   const color = getBracketedCsv(result.response.text().trim().toLowerCase());

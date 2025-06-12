@@ -19,24 +19,58 @@ const featureValueClassifier = async function (
   );
   const model = genAI.getGenerativeModel({ model: MODEL });
   const prompt = `
-You are a simple product feature classifier for a furniture store chatbot. Your job is to match the available features list for a product line up across the products list with what the user is actually looking for.
-The product that the user wants to see has been classified as ${filteredProduct[0]}, the particular product cataegory has been classified as ${filteredProduct[1]}
+You are a simple product feature value classifier for a furniture store chatbot.  
+Your job is to classify which specific feature values (not just feature categories) from the available list match what the user is asking for.
 
-Chat History of the user (past 7 messages):
+---
+## Context:
+- Product: ${filteredProduct[0]}
+- Product category: ${filteredProduct[1]}
+- Available feature values: ${featureValueListString}
+- Chat History (last 7 messages):  
 ${history}
+---
 
-Consider the above history as well when responding. if the user's query requires past knowledge use the features from above, however if the user's query does not mention features as well as that context is not required for search, do not use the above history
+## Rules for Classification:
 
-Classify the user's search into one of these feature requests for the product- ${filteredProduct[0]}:
+1. **Check if the current query contains any specific feature values** (e.g., "55 inch", "leather", "recliner", "matte black", etc.).
+    - If yes → Map them to the closest matching entries in the provided list using common synonyms and real-world interpretations.
+    - If no → proceed to Rule 2.
 
-${featureValueListString}
+2. If the query does not contain any feature-related values:
+    - Check if the chat history contains a **recent specific feature value** related to the same product.
+    - If so, and if it is relevant to the user’s current query, use it.
+    - Otherwise, return [null].
 
-Only include the features listed above in your answer, do not add your own, or placeholder answer.
-Please keep in mind common synonyms and interchangeably used terms for above features. Keep in mind redundancy, do not use similar descriptions twice. Respond with just one or more features that matches for the search and put it between square brackets seperated by a comma. example: [big oled display,maximum storage]
-The featuers that the user requests but are not available should also be included and put in a seperate [], example if matched feature is "[big oled display,maximum storage]" and unmatched is "[bone,muscle]" your reply should be [big oled display,maximum storage]&&[bone,muscle]]. Reply with [null] if the feature asked by user is nonsensical, impractical, unusual category for that product, useless or does not make sense. Do not use any other words in the output please.
+3. Only include values **that are listed in the feature value list**.  
+    - If a value is **not present** in the list but appears to be requested, add it to a separate unmatched list.
 
-Query: "${query}"
-Features:
+4. Match **close synonyms or interchangeable phrases** to the list values.
+    - Example: "fifty-five inch" or "55-inch" → "55 inch"
+    - Example: "charcoal" → "dark grey", if that's in the list
+    - Avoid including similar values more than once (handle redundancy).
+
+5. Format:
+    - If matches found: [matched1,matched2]
+    - If some are unmatched: [matched1] && [unmatched1]
+    - If nothing is relevant: [null]
+
+6. Do **not** add your own feature values, placeholder guesses, or general descriptions.  
+    Only classify values from the provided list, or include unmatched ones explicitly.
+
+---
+## Final Instruction:
+
+Return the result strictly in this format:  
+- [matched1,matched2]
+- or [matched1] &&
+    [unmatched1,unmatched2] 
+- or [null] if no valid value is found.  
+
+Do **not** include any other text or explanation.
+
+---
+User Query: "${query}"
 `;
 
   const result = await model.generateContent(prompt);
