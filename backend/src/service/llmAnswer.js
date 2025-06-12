@@ -63,6 +63,7 @@ You will receive:
 2. A product schema.
 
 Use natural language but be concise. Do not include anything else in your response
+Reply in plain text and do not use markdown
 
 User Query: ${query}
 Product Schema: ${product}
