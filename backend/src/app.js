@@ -5,7 +5,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 const adminRoutes = require("./routes/route");
-app.use("/", adminRoutes);
+app.use("/apps/chatSmart", adminRoutes);
 const path = require("path");
 app.use(express.static(path.join(__dirname, "..", "..", "frontend")));
 // Start server
