@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatBot Page</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #fffdff;
+        color: #fffdff;
+        font-family: "Roboto", sans-serif;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .chat-container {
+        width: 600px;
+        height: 650px;
+        background-color: #fffdff;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .chat-header {
+        background-color: #222222;
+        color: #fffdff;
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .image-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        gap: 8px;
+        background-color: #f4f4f4;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .image-row img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+
+      .chat-messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        font-size: 14px;
+        background-color: #f4f4f4;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .chat-message {
+        margin-bottom: 10px;
+        padding: 10px;
+        max-width: 80%;
+        word-wrap: break-word;
+      }
+
+      .user-message {
+        background-color: #222222;
+        color: #fffdff;
+        align-self: flex-end;
+        margin-left: auto;
+        border-radius: 10px 10px 0px 10px;
+      }
+
+      .bot-message {
+        background-color: #e0e0e0;
+        color: #222222;
+        align-self: flex-start;
+        margin-right: auto;
+        border-radius: 10px 10px 10px 0px;
+      }
+
+      .chat-input {
+        display: flex;
+        border-top: 1px solid #ccc;
+      }
+
+      .chat-input input {
+        flex: 1;
+        padding: 10px 15px;
+        border: none;
+        outline: none;
+        background: #f4f4f4;
+        font-size: 14px;
+      }
+
+      .chat-input button {
+        padding: 10px 30px;
+        background-color: #222222;
+        color: #fffdff;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .product-card {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 12px;
+        padding: 10px;
+        display: flex;
+        gap: 10px;
+        text-decoration: none;
+        align-items: center;
+      }
+
+      .product-card img {
+        width: 80px;
+        height: 80px;
+        border-radius: 6px;
+        object-fit: cover;
+      }
+
+      .product-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .product-title {
+        font-weight: bold;
+        margin-bottom: 4px;
+        color: #222222;
+      }
+
+      .product-price {
+        color: #333;
+        font-weight: 500;
+      }
+
+      .product-desc {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+      }
+
+      .skeleton-line {
+        height: 14px;
+        background-color: #e0e0e0;
+        border-radius: 4px;
+        margin: 6px 0;
+        animation: pulse 1.5s infinite;
+        width: 150px;
+      }
+
+      .skeleton-line.short {
+        width: 50%;
+      }
+
+      @keyframes pulse {
+        0% {
+          background-color: #e0e0e0;
+        }
+        50% {
+          background-color: #f0f0f0;
+        }
+        100% {
+          background-color: #e0e0e0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <input type="hidden" name="id" id="IdBox" />
+      <div class="chat-header">ChatBot</div>
+
+      <div class="chat-messages" id="chatMessages"></div>
+
+      <form class="chat-input" id="ChatForm">
+        <input type="text" id="userInput" placeholder="Type your message..." />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+    <script src="https://unpkg.com/compromise"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const randomId = Math.floor(1000000000 + Math.random() * 9000000000);
+        const idBox = document.getElementById("IdBox");
+        if (idBox) {
+          idBox.value = randomId;
+        }
+      });
+      document
+        .getElementById("ChatForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent the form from submitting
+          sendMessage(); // Call the sendMessage function
+        });
+
+      const messages = [];
+
+      function sendMessage() {
+        const input = document.getElementById("userInput");
+        const text = input.value.trim();
+        const ChatId = document.getElementById("IdBox").value;
+        if (text === "") return;
+
+        messages.push({ sender: "user", text });
+        renderMessages(); // ✅ Show user message
+        showSkeletonLoader(); // ✅ Show bot loading
+
+        input.value = "";
+
+        fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ query: text, chatId: ChatId }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const responseText = data.response || "No response from server.";
+            removeSkeletonLoader(); // ✅ Remove loader on response
+            messages.push({ sender: "bot", response: responseText });
+            renderMessages(); // ✅ Show bot response
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            removeSkeletonLoader(); // ✅ Remove loader even on error
+            messages.push({
+              sender: "bot",
+              response: "⚠️ Failed to connect to chat server.",
+            });
+            renderMessages();
+          });
+      }
+
+      function showSkeletonLoader() {
+        const chatMessages = document.getElementById("chatMessages");
+
+        const div = document.createElement("div");
+        div.classList.add("chat-message", "bot-message", "loading-skeleton");
+        div.id = "skeleton-loader";
+
+        const line1 = document.createElement("div");
+        line1.className = "skeleton-line";
+
+        const line2 = document.createElement("div");
+        line2.className = "skeleton-line short";
+
+        div.appendChild(line1);
+        div.appendChild(line2);
+        chatMessages.appendChild(div);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      function removeSkeletonLoader() {
+        const skeleton = document.getElementById("skeleton-loader");
+        if (skeleton) skeleton.remove();
+      }
+
+      function renderMessages() {
+        const chatMessages = document.getElementById("chatMessages");
+        chatMessages.innerHTML = "";
+
+        messages.forEach((msg) => {
+          const div = document.createElement("div");
+
+          if (msg.sender === "user") {
+            div.classList.add("chat-message", "user-message");
+            div.textContent = msg.text;
+          } else if (msg.sender === "bot") {
+            div.classList.add("chat-message", "bot-message");
+
+            const response = msg.response;
+
+            // ✅ Extract greeting (first non-empty line not starting with "*")
+            const lines = response.trim().split("\n");
+            const greetingLine = lines.find(
+              (line) => line.trim() && !line.trim().startsWith("*")
+            );
+
+            if (greetingLine) {
+              const greetEl = document.createElement("div");
+              greetEl.className = "bot-greeting";
+              greetEl.textContent = greetingLine;
+              div.appendChild(greetEl);
+            }
+
+            // ✅ Product extraction
+            const productRegex =
+              /\\*name:\\* (.+?)\n\s+- \\*description:\\* (.+?)\n\s+- \\*price:\\* ₹([\d,]+)\n\s+- \\*image:\\* (https?:\/\/[^\s]+)\n\s+- \\*url:\\* (https?:\/\/[^\s]+)/g;
+
+            const products = [];
+            let match;
+            while ((match = productRegex.exec(response)) !== null) {
+              products.push({
+                title: match[1].trim(),
+                desc: match[2].trim(),
+                price: match[3].trim(),
+                imageUrl: match[4].trim(),
+                url: match[5].trim(),
+              });
+            }
+
+            // ✅ Render product cards
+            if (products.length > 0) {
+              products.forEach((p) => {
+                const card = document.createElement("a");
+                card.className = "product-card";
+                card.href = p.url;
+                card.target = "_blank";
+
+                const img = document.createElement("img");
+                img.src = p.imageUrl;
+                img.alt = p.title;
+
+                const info = document.createElement("div");
+                info.className = "product-info";
+
+                const titleEl = document.createElement("div");
+                titleEl.className = "product-title";
+                titleEl.textContent = p.title;
+
+                const descEl = document.createElement("div");
+                descEl.className = "product-desc";
+                descEl.textContent = p.desc;
+
+                const priceEl = document.createElement("div");
+                priceEl.className = "product-price";
+                priceEl.textContent = "₹" + p.price;
+
+                info.appendChild(titleEl);
+                info.appendChild(descEl);
+                info.appendChild(priceEl);
+
+                card.appendChild(img);
+                card.appendChild(info);
+                div.appendChild(card);
+              });
+            } else {
+              div.textContent = response;
+            }
+          }
+
+          chatMessages.appendChild(div);
+        });
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      document.ready;
+    </script>
+  </body>
+</html>
