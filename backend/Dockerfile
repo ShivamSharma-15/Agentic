@@ -12,7 +12,7 @@ COPY backend/ .
 
 # Copy frontend if needed (optional)
 COPY data/ /app/data/
-
+COPY frontend/ /app/frontend/
 # Expose the backend port (match the internal app port)
 EXPOSE 3000
 
